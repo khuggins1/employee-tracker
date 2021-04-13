@@ -5,6 +5,7 @@ const inquirer = require('inquirer');
 
 const db = require('./db/database')
 
-const { getAlldepartments, addDepartment} = require('.')
+const { getAlldepartments, addDepartment} = require('./utils/departments');
+const { getAllRoles, addRoles } = require('./utils/roles');
 
-addDepartment('testing');
+getAllRoles();
