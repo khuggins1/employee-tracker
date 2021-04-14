@@ -7,18 +7,19 @@ const displayMany = () => {
 };
 
 //new employee
-const addEmployee = (name, sal, depId) => {
+const addEmployee = (firstName, lastName, roleId, managerId) => {
     console.log('name:', name, 'salary', sal, 'department_id', depId);
     con.promise().query(
-        `INSERT INTO roles SET ?`,
+        `INSERT INTO employees SET ?`,
         {
-            title: name,
-            salary: sal,
-            department_id: depId
+            first_name: firstName,
+            last_name: lastName,
+            manager_id: managerId,
+            role_id: roleId
         },
     )
     .then(([rows, fields]) => {
-        console.log('new role added')
+        console.log('new employee added')
         console.log(rows);
     })
  .catch(error => {
@@ -28,6 +29,23 @@ const addEmployee = (name, sal, depId) => {
  })  
  .then( () => displayMany());
 
+};
+const updateRole = (employeeId, roleId) => {
+    con.promise().query(
+        `UPDATE employees SET ? WHERE employees.id = ?`,
+        [{ role_id: roleId }, employeeId]
+
+    )
+    .then (([rows]) => {
+        console.log('employee updated')
+        console.log(rows);
+    })
+    .catch(error => {
+        if (error) {
+            console.log(error)
+        }
+    })
+    .then( () => displayMany());
 };
 
 const getAllEmployees = () => {
@@ -53,4 +71,4 @@ const getAllEmployees = () => {
 };
 
 
-module.exports = { getAllEmployees, addEmployee };
+module.exports = { getAllEmployees, addEmployee, updateRole };
