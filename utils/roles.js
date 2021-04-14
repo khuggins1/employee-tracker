@@ -6,13 +6,14 @@ const displayMany = () => {
     con.end()
 };
 
-const addRole = role => {
+const addRole = (name, sal, depId) => {
+    console.log('name', name, 'salary', sal, 'department_id', depId);
     con.promise().query(
         `INSERT INTO roles SET ?`,
         {
-            name: role.name,
-            salary: role.salary,
-            department_id: role.department_id
+            title: name,
+            salary: sal,
+            department_id: depId
         },
     )
     .then (([rows, fields]) => {
