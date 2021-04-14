@@ -6,6 +6,5 @@ const inquirer = require('inquirer');
 const db = require('./db/database')
 
 const { getAlldepartments, addDepartment} = require('./utils/departments');
-const { getAllRoles, addRoles } = require('./utils/roles');
+const { getAllRoles, addRoles, addRole } = require('./utils/roles');
 
-getAllRoles();
