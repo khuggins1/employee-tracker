@@ -53,4 +53,23 @@ const getAllRoles = () => {
     return con.promise().query("SELECT id, title FROM roles")
 }
 
-module.exports = { displayAllRoles, getAllRoles, addRole };
+//delete a role
+
+const deleteRole = (role) => {
+    let id = 0;
+
+    let getId = role.role.split(".");
+
+    id = parseInt(getId[0]);
+    return con.promise().query(
+        `DELETE FROM roles WHERE roles.id = ?`, id)
+        .then (([rows, fields]) => {
+            console.log(`role ${getId[1]} deleted`)
+        })
+        .catch(error => {
+            if (error) {
+                console.log(`error deleting role:`, error)
+            }
+        })
+}
+module.exports = { displayAllRoles, getAllRoles, addRole, deleteRole};

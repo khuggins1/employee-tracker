@@ -46,4 +46,22 @@ const getAllDepartments = () => {
     return con.promise().query("SELECT * FROM departments")
 }
 
-module.exports = { displayAllDepartments, getAllDepartments, addDepartment };
+//delete department
+
+const deleteDep = (data) => {
+    let id = 0;
+
+    let getId = data.addDepartment.split(".");
+    id=parseInt(getId[0]);
+    return con.promise().query(
+        `DELETE FROM departments WHERE departments.id = ?`, id)
+        .then(([ rows, fields]) => {
+            console.log(`department ${getId[1]} deleted`)
+        })
+        .catch (error => {
+            if(error) {
+                console.log(`eror deleting department:`, error)
+            }
+        })
+}
+module.exports = { displayAllDepartments, getAllDepartments, addDepartment, deleteDep };
