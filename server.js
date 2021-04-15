@@ -8,10 +8,6 @@ const db = require('./db/database');
 
 const displayMenu = require('./utils/displayMenu');
 
-const { addEmployee, updateRole, getAllEmployees, addingEmployee} = require('./utils/employees');
-
-
-
 
 // get the client
 const mysql = require('mysql2');

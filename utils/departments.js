@@ -1,12 +1,7 @@
 const cTable = require('console.table');
 
 const con = require('./db/database');
-const { CONNREFUSED } = require('dns');
 
-const displayMany = () => {
-
-    con.end()
-};
 
 const addDepartment = name => {
     return con.promise().query(
@@ -23,7 +18,6 @@ const addDepartment = name => {
             console.log(error)
         }
     })
-    .then( () => getAllDepartments());
 
 };
 
@@ -39,7 +33,7 @@ const displayAllDepartments = () => {
             console.log('error connecting with database')
         }
     })
-    .then( () => displayMany());
+
 };
 
 const getAllDepartments = () => {
@@ -52,7 +46,7 @@ const deleteDep = (data) => {
     let id = 0;
 
     let getId = data.addDepartment.split(".");
-    id=parseInt(getId[0]);
+    id = parseInt(getId[0]);
     return con.promise().query(
         `DELETE FROM departments WHERE departments.id = ?`, id)
         .then(([ rows, fields]) => {
@@ -64,4 +58,23 @@ const deleteDep = (data) => {
             }
         })
 }
-module.exports = { displayAllDepartments, getAllDepartments, addDepartment, deleteDep };
+
+
+const viewBudget = () => {
+    return con.promise().query(
+        `SELECT name AS Department_name, SUM(salary) AS total  
+        FROM employees
+        LEFT JOIN roles ON role_id = roles.id
+        LEFT JOIN departments ON roles.department_id = departments.id
+        GROUP BY name;`)
+        .then(([rows, fields]) => {
+            console.log(`Total Budget utilized by deprtments`)
+            console.table(rows)
+        })
+        .catch(error =>{
+            if (error){
+                console.log(`error viewing budget: `, error)
+            }
+        })
+}
+module.exports = { displayAllDepartments, addDepartment, getAllDepartments, deleteDep, viewBudget};

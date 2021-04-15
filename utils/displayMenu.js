@@ -6,122 +6,109 @@ const con = require('../db/database');
 const { addEmployee, updateRole, displayAllEmployees, getAllEmployees, updateManager, delteEmployee, deleteEmployee} = require('../utils/employees');
 const { MenuQuestions, addDepartmentQuestions, addRoleQuestions, addEmployeeQuestions, upEmpRoleQuesions, updateManagerQuestions, deleteEmployeeQuestions, deleteDepQuestions, deleteRoleQuestions} = require('../utils/questions')
 
-const MenuQuestions = {
-    type: 'list',
-    name: 'menuChoice',
-    message:'What would you like to do?',
-    choices: [
-        'View all departments',
-        'View all roles',
-        'View all employees',
-        'Add a department',
-        'Add a role',
-        'Add an employee',
-        'Update an employee role',
-        'Exit'
-
-    ],
-};
-
-const addDepartmentQuestions = {
-    type: 'input',
-    name: 'name',
-    message: "Please enter a Department's name:",
-    validate: nameInput => {
-        if (nameInput) {
-            return true;
-        } else {
-            console.log(`Please enter a Department's name`);
-            return false;
-        }
-    },
-};
 
 
 
-//questions
-
-
-const addRoleQuestions = (departments) => {
-    let departmentsArr= [];
-    departments.forEach(department => {
-        let aux = department.id + '.' + department.name;
-        departmentsArr.push(aux);
-    })
-    let Questions = [
-        {
-            type: 'input',
-            name: 'title',
-            message: "Please enter Role's title: (Require)",
-            validate: nameInput => {
-                if(nameInput) {
-                    return true;
-                } else {
-                    console.log(`Please enter a role's title`);
-                    return false;
-                }
-            },
-        },
-        {
-            type:'number',
-            name: 'salary',
-            message: "Please enter Role's salary: (Require)",
-            validate: nameInput => {
-                if (nameInput) {
-                    return true;
-                } else {
-                    console.log(`Please enter a role's salary`);
-                    return false;
-                }
-            }
-        },
-        {
-            type: 'list',
-            name: 'menuChoice',
-            message: "What would you like to do?",
-            choices: departmentsArr,
-        },
-    ];
-
-
-return Questions; 
-}
-//display menu
-
-const displayMenu = () => {
-return inquirer.prompt(MenuQuestions)
-.then((answers) => {
-    if(answers.menuChoice === 'Exit') {
+//function to display menu
+const displayMenu =() => {
+    return inquirer.prompt(MenuQuestions)
+    .then((answers) => {
+      if (answers.menuChoice === 'Exit'){
         con.end();
-        console.log('BYE BYE!')
+        console.log('BYE!')
         return;
-    } else if (answers.menuChoice === 'View all departments') {
+      }else if (answers.menuChoice === 'View all departments') {
         console.log('\n');
         displayAllDepartments()
         .then(() => {
+          console.log('\n')
+          displayMenu();
+        })
+      } else if (answers.menuChoice === 'View all roles') {
+          console.log('\n');
+          displayAllRoles()
+          .then(() => {
             console.log('\n')
             displayMenu();
+          })
+      } else if (answers.menuChoice === 'View all employees') {
+        console.log('\n');
+        displayAllEmployees(1)
+          .then(() => {
+            console.log('\n');
+            displayMenu();
+          })
+      } else if (answers.menuChoice === 'View all employees by manager') {
+        console.log('\n');
+        displayAllEmployees(2)
+          .then(() => {
+            console.log('\n');
+            displayMenu();
+          })
+      } else if (answers.menuChoice === 'View all employees by department') {
+        console.log('\n');
+        displayAllEmployees(3)
+          .then(() => {
+            console.log('\n');
+            displayMenu();
+          })
+      } else if (answers.menuChoice === 'Add a department'){
+          console.log('\n');
+          promptAddDepartment();
+      } else if (answers.menuChoice === 'Add a role'){
+          getAllDepartments()
+          .then(([rows, fields]) => {
+            promptAddRole(rows)
+          })
+      } else if (answers.menuChoice === 'Add an employee'){
+        getAllEmployees()
+        .then(([managers, fields]) => {
+          promptAddEmployee(managers)
         })
-    } else if (answers.menuChoice === 'View all roles') {
+      } else if (answers.menuChoice === `Update an employee's role`){
+        getAllEmployees()
+        .then(([employees, fields]) => {
+          promptUpdateEmployeeRole(employees)
+        })
+      } else if (answers.menuChoice === `Update an employee's manager`){
+        getAllEmployees()
+        .then(([employees, fields]) => {
+          promptUpdateManager(employees)
+        })
+      } else if (answers.menuChoice === 'Delete department') {
+        console.log('\n');
+        getAllDepartments()
+        .then(([departments, fields]) => {
+          promptDeleteDep(departments)
+        })
+      } else if (answers.menuChoice === 'Delete role') {
         console.log('\n');
         getAllRoles()
+        .then(([roles, fields]) => {
+          promptDeleteRole(roles)
+        })
+      } else if (answers.menuChoice === 'Delete employee') {
+        console.log('\n');
+        getAllEmployees()
+        .then(([employees, fields]) => {
+          promptDeleteEmployee(employees)
+        })
+      } else if (answers.menuChoice === `View total budget utilized by department`) {
+        console.log('\n');
+        viewBudget()
         .then(() => {
-            console.log('\n')
-            displayMenu()
+          console.log('\n')
+          displayMenu();
         })
-    } else if (answer.menuChoice === 'Add a role') {
-        getAllDepartments()
-        .then(([rows, fields]) => {
-            promptAddRole(rows)
-        })
-    }
-})
-};
+      }
+    })
+  };
 
+            
 //add department
 const promptAddDepartment = () => {
     inquirer.prompt(addDepartmentQuestions)
-    .then((answers) => {
+    .then((answer) => {
         console.log(answer.name);
         addDepartment(answer.name)
         .then(() => {
@@ -135,7 +122,7 @@ const promptAddDepartment = () => {
 }
 
 //new role
-const promptAddRole = (department) => {
+const promptAddRole = (departments) => {
     let questions = addDepartmentQuestions(departments);
     inquirer.prompt(questions)
     .then((answer) => {
@@ -164,6 +151,41 @@ const promptAddEmployee = (managers) => {
         console.log('error adding employee', err);
     })
 }
+//function to update employee's role
+const promptUpdateEmployeeRole = (employees) =>{
+    getAllRoles()
+    .then(([roles, fields]) => {
+      let questions= UpdEmpRoleQuestions(roles,employees);
+      inquirer.prompt(questions)
+      .then((answer)=>{
+        updateRole(answer)
+        .then(() => {
+          console.log('\n')
+          displayMenu();
+        })
+      })
+      .catch(err => {
+        console.log('error adding employee:', err);
+      })
+    })
+  }
+  
+  //function to update employee's manager
+  const promptUpdateManager = (employees) =>{
+    let questions= updateMangerQuestions(employees);
+    inquirer.prompt(questions)
+    .then((answer)=>{
+      updateManager(answer)
+      .then(() => {
+        console.log('\n')
+        displayMenu();
+      })
+    })
+    .catch(err => {
+      console.log('error updating manager:', err);
+    })  
+  }
+  
 
 //delete department
 const promptDeleteDep = (Deps) => {
@@ -186,7 +208,7 @@ const promptDeleteDep = (Deps) => {
 }
 
 //delete Role
-const promptDleteRole = (roles) => {
+const promptDeleteRole = (roles) => {
     let question = deleteRoleQuestions(roles);
     inquirer.prompt(question)
     .then ((answer) => {
