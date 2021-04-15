@@ -1,12 +1,10 @@
 const inquirer = require('inquirer');
 
-const { displayAllDepartments, getAllDepartments, addDepartment } = require('../utils/departments');
-
-const { addEmloyee, updateRole, displayALLEmployees, getAllEmployees } = require('../utils/employees');
-const { MenuQuestions, addDepartmentQuestions, addRoleQuestions, addEmployeeQuestions} = require('../utils/questions')
+const {displayAllDepartments, addDepartment, getAllDepartments, deleteDep} = ('../utils/departments');
+const { displayallRoles, addRole, getAllRoles, deleteRole} = require('../utils/roles')
 const con = require('../db/database');
-const { getAllRoles } = require('./roles');
-
+const { addEmployee, updateRole, displayAllEmployees, getAllEmployees, updateManager, delteEmployee, deleteEmployee} = require('../utils/employees');
+const { MenuQuestions, addDepartmentQuestions, addRoleQuestions, addEmployeeQuestions, upEmpRoleQuesions, updateManagerQuestions, deleteEmployeeQuestions, deleteDepQuestions, deleteRoleQuestions} = require('../utils/questions')
 
 const MenuQuestions = {
     type: 'list',
@@ -167,4 +165,63 @@ const promptAddEmployee = (managers) => {
     })
 }
 
+//delete department
+const promptDeleteDep = (Deps) => {
+    let question = deleteDepQuestions(Deps);
+    inquirer.prompt(question)
+    .then ((answer) => {
+        if(answer.department === 'None'){
+        displayMenu();
+    } else if (answer.department !== 'None') {
+        deleteDep(answer)
+        .then(() => {
+            console.log('\n')
+            displayMenu();
+        })
+    }
+    })
+    .catch(err => {
+        console.log(`error deleting department:`, err);
+    })
+}
+
+//delete Role
+const promptDleteRole = (roles) => {
+    let question = deleteRoleQuestions(roles);
+    inquirer.prompt(question)
+    .then ((answer) => {
+        if (answer.role === 'None') {
+            displayMenu();
+        } else if (answer.role !== 'None') {
+            deleteRole(answer)
+            .then(() => {
+                console.log('\n')
+                displayMenu();
+            })
+        }
+    })
+    .catch(err => {
+        console.log(`error deleting role:`, err);
+    })
+}
+//delete employee
+const promptDeleteEmployee = (employees) => {
+    let question= deleteEmployeeQuestions(employees);
+    inquirer.prompt(question)
+    .then((answer) => {
+        if(answer.employee === 'None'){
+            displayMenu();
+        } else if (answer.employee !== 'None') {
+            deleteEmployee(answer)
+            .then(() => {
+                console.log('\n')
+                displayMenu();
+            })
+        }
+    })
+
+.catch (err => {
+    console.log(`error deleting employee:`, err);
+})
+}
 module.exports = displayMenu;

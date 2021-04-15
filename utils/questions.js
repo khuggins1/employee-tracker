@@ -1,6 +1,7 @@
 //menu questions
 
 const departments = require("./departments");
+const employees = require("./employees");
 
 const MenuQuestions = {
     type: 'list',
@@ -14,6 +15,9 @@ const MenuQuestions = {
         'Add a role',
         'Add an employee',
         'Update an employee role',
+        'Deleting department',
+        'Delete role',
+        'Delete employee',
         'Exit',
     ],
 };
@@ -136,4 +140,62 @@ const addRoleQuestions = (departments) => {
      return Questions;
  }
 
- module.exports = {MenuQuestions, addDepartmentQuestions, addRoleQuestions, addEmployeeQuestions}
+
+//delete questions
+
+const deleteEmployeeQuestions = (employees) => {
+    let employeesArr = [];
+    employeesArr.push('None')
+    employees.forEach(employee => {
+        let aux = employee.id + '.' + employee.first_name + '' + employee.last_name;
+        employeesArr.push(aux);
+    });
+
+    //questions array
+    const question = {
+        type: 'list',
+        name: 'employee',
+        message: `Please select the employee to delete:`,
+        choices: employeesArr,
+    }
+    return question;
+}
+
+//delete depart
+
+const deleteDepQuestions = (Deps) => {
+    let depsArr = [];
+    depsArr.push('None')
+    Deps.forEach(dep => {
+        let aux = dep.id + '.' + dep.name;
+        depsArr.push(aux);
+    });
+    const question = {
+        type: 'list',
+        name: 'department',
+        message: `Please select the department to delete:`,
+        choices: depsArr,
+    }
+    return question;
+}
+
+//queso to delete role
+const deleteRoleQuestions = (roles) => {
+    let rolesArr = [];
+    rolesArr.push('None')
+    roles.forEach(role => {
+        let aux = role.id + '.' + role.title;
+        rolesArr.push(aux);
+    });
+
+    const question = {
+        type: 'list',
+        name: 'role',
+        message: `Please select the role to delete:`,
+        choices: rolesArr,
+    }
+    return question;
+}
+
+
+ module.exports = {MenuQuestions, addDepartmentQuestions, addRoleQuestions, addEmployeeQuestions, updEmpRoleQuestions, updateMangerQuestions, deleteEmployeeQuestions, deleteDepQuestions, deleteRoleQuestions}

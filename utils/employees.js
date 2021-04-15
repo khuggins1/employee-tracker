@@ -88,6 +88,24 @@ const getAllEmployees = () => {
     return con.promise(). query(
         `SELECT id , first_name, last_name
         FROM employees`)
+};
+
+const deleteEmployee = (data) => {
+
+    let id = 0;
+
+    let getId = data.employee.split(".");
+    id = parseInt(getId[0]);
+    return con.promise(). query (
+        `DELETE FROM employees WHERE employees.id = ?`, id)
+        .then (([rows, fields ]) => {
+            console.log(`employee ${getId[1]} deleted`)
+        })
+        .catch(error => {
+            if(error) {
+                console.log(`error deleting employee:`, error)
+            }
+        })
 }
 
-module.exports = { addEmployee, displayAllEmployees, getAllEmployees, updateRole };
+module.exports = { addEmployee, displayAllEmployees, getAllEmployees, updateRole, updateManager, deleteEmployee };
