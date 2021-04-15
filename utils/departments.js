@@ -1,6 +1,7 @@
 const cTable = require('console.table');
 
 const con = require('./db/database');
+const { CONNREFUSED } = require('dns');
 
 const displayMany = () => {
 
@@ -8,16 +9,15 @@ const displayMany = () => {
 };
 
 const addDepartment = name => {
-    con.promise().query (
+    return con.promise().query(
         'INSERT INTO departments SET ?',
         {
             name:name
         },
     )
-    .then(([rows, fields]) => {
-        console.log('enter here')
-        console.table(rows);
-    })
+   .then(([rows, fields]) => {
+       console.log('department  added')
+   })
     .catch(error => {
         if(error) {
             console.log(error)
@@ -28,10 +28,10 @@ const addDepartment = name => {
 };
 
 //all dep
-const getAllDepartments = () => {
-    con.promise().query ("SELECT * FROM departments")
+const displayAllDepartments = () => {
+    return con.promise().query ("SELECT * FROM departments")
     .then(([rows, fields]) => {
-        console.log('Departments......')
+        console.log('\n\n Departments......');
         console.table(rows);
     })
     .catch(error => {
@@ -42,4 +42,8 @@ const getAllDepartments = () => {
     .then( () => displayMany());
 };
 
-module.exports = { getAllDepartments, addDepartment };
+const getAllDepartments = () => {
+    return con.promise().query("SELECT * FROM departments")
+}
+
+module.exports = { displayAllDepartments, getAllDepartments, addDepartment };

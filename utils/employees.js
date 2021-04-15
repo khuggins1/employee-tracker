@@ -2,32 +2,49 @@ const cTable = require('console.table');
 
 const con = require('../db/database');
 
-const displayMany = require('../utils/displayMenu')
 
 //new employee
-const addEmployee = (firstName, lastName, roleId, managerId) => {
-    console.log('name:', name, 'salary', sal, 'department_id', depId);
-    con.promise().query(
-        `INSERT INTO employees SET ?`,
-        {
-            first_name: firstName,
-            last_name: lastName,
+const addEmployee = (employee) => {
+    console.log(employee)
+    let getId = employee.role.split(".");
+    let roleId = parseInt(getId);
+    let getMId = employee.manager.split(".");
+    let managerId= '';
+    let data = {}
+    if (getMId[0] !== 'NULL') {
+        console.log(getMId, 'not NULL')
+        managerId = parseInt(getMId);
+        data = {
+            first_name:employee.firstName,
+            last_name:employee.lastName,
             manager_id: managerId,
             role_id: roleId
-        },
+    
+    }
+} else if(getMId[0] === 'NULL') {
+    console.log(getMId, `IS NULL`)
+    data = {
+        first_name: employee.firstName,
+        last_name: employee.lastName,
+        role_id: roleId
+    }
+}
+    return con.promise().query(
+        `INSERT INTO employees SET ?`,
+        data,
     )
+    
     .then(([rows, fields]) => {
         console.log('new employee added')
-        console.log(rows);
+        console.log(data);
     })
  .catch(error => {
      if (error) {
-         console.log(error)
+         console.log('error adding new employee:', error)
      }
- })  
- .then( () => displayMany());
-
-};
+    })
+      
+}
 const updateRole = (employeeId, roleId) => {
     con.promise().query(
         `UPDATE employees SET ? WHERE employees.id = ?`,
@@ -40,14 +57,14 @@ const updateRole = (employeeId, roleId) => {
     })
     .catch(error => {
         if (error) {
-            console.log(error)
+            console.log( `error adding updating employee's role:`, error)
         }
     })
     .then( () => displayMany());
 };
 
-const getAllEmployees = () => {
-    con.promise().query(
+const displayAllEmployees = () => {
+    return con.promise().query(
         `SELECT e.id, e.first_name, e.last_name, title AS Job_Title, salary, name AS Department_Name,
         IFNULL (CONCAT(m.first_name, ',', m.last_name), 'NULL') AS 'Manager'
         FROM employees e
@@ -61,12 +78,16 @@ const getAllEmployees = () => {
         })
         .catch(error => {
             if (error) {
-                console.log(error)
+                console.log(`error viewing all employees`,error)
             }
         })
-        .then ( () => displayMany());
-    
+     
 };
 
+const getAllEmployees = () => {
+    return con.promise(). query(
+        `SELECT id , first_name, last_name
+        FROM employees`)
+}
 
-module.exports = { getAllEmployees, addEmployee, updateRole };
+module.exports = { addEmployee, displayAllEmployees, getAllEmployees, updateRole };
