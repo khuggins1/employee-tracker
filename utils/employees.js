@@ -63,32 +63,87 @@ const updateRole = (employeeId, roleId) => {
     .then( () => displayMany());
 };
 
-const displayAllEmployees = () => {
-    return con.promise().query(
-        `SELECT e.id, e.first_name, e.last_name, title AS Job_Title, salary, name AS Department_Name,
+const displayAllEmployees = (view) => {
+    let param = '';
+    if(view === 1) {
+        parma = `SELECT e.id, e.first_name, e.last_name, title AS Job_Title, salary, name AS Department_Name,
         IFNULL (CONCAT(m.first_name, ',', m.last_name), 'NULL') AS 'Manager'
         FROM employees e
         LEFT JOIN employees m ON e.manager_id = m.id
         LEFT JOIN roles ON e.role_id = roles.id
         LEFT JOIN departments ON roles.department_id = departments.id
-        ORDER BY e.id ASC;`)
-        .then (([rows, fields]) => {
+        ORDER BY e.id ASC;`
+
+    } else if (view === 2){
+        param = `SELECT e.id, e.first_name, e.last_name, title AS Job_Title, salary, name AS Department_Name, 
+        IFNULL(CONCAT(m.first_name, ', ', m.last_name),'NULL') AS 'Manager'
+        FROM employees e
+        LEFT JOIN employees m ON e.manager_id = m.id
+        LEFT JOIN roles ON e.role_id = roles.id
+        LEFT JOIN departments ON roles.department_id = departments.id
+        ORDER BY Manager;`
+    //selected view by department
+    } else if (view === 3){
+        param = `SELECT e.id, e.first_name, e.last_name, title AS Job_Title, salary, name AS Department_Name, 
+        IFNULL(CONCAT(m.first_name, ', ', m.last_name),'NULL') AS 'Manager'
+        FROM employees e
+        LEFT JOIN employees m ON e.manager_id = m.id
+        LEFT JOIN roles ON e.role_id = roles.id
+        LEFT JOIN departments ON roles.department_id = departments.id
+        ORDER BY name;`
+    }
+
+    return con.promise().query(param)
+        .then(([rows, fields]) => {
             console.log('Employees......')
-            console.log.table(rows);
+            console.table(rows);
         })
-        .catch(error => {
-            if (error) {
-                console.log(`error viewing all employees`,error)
+        .catch(error =>{
+            if (error){
+                console.log('error viewing all employees: ', error)
             }
         })
-     
 };
+     
 
 const getAllEmployees = () => {
     return con.promise(). query(
         `SELECT id , first_name, last_name
         FROM employees`)
 };
+
+//Update Employee's manager
+const updateManager = (data)=>{
+
+    // to get the Id from the employee string
+    let getId = data.employee.split(".");
+    let employeeId = parseInt(getId[0]);
+
+    //define param depending on if manager's Id is NULL or not
+    let param = [];
+    if(data.manager !== 'None'){    
+        // to get the Id from the manager string
+        let splitId = data.manager.split(".");
+        let managerId = parseInt(splitId[0]);
+        param = [managerId, employeeId]
+    } else if(data.manager === 'None'){
+        param = [null, employeeId]
+    }
+    return con.promise().query(
+        `UPDATE employees SET manager_id = ? WHERE employees.id = ?`,
+        param
+        )
+        .then(([rows, fields]) => {
+            console.log('employee updated')
+            console.log(getId[1])
+        })
+        .catch(error =>{
+            if (error){
+                console.log(`error updating employee's manager: `, error)
+            }
+        }) 
+};
+
 
 const deleteEmployee = (data) => {
 
