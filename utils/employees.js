@@ -2,9 +2,7 @@ const cTable = require('console.table');
 
 const con = require('../db/database');
 
-const displayMany = () => {
-    con.end()
-};
+const displayMany = require('../utils/displayMenu')
 
 //new employee
 const addEmployee = (firstName, lastName, roleId, managerId) => {
