@@ -1,17 +1,17 @@
-const cTable = require('console.table');
-require('dotenv').config();
-const inquirer = require('inquirer');
-const mysql = require('mysql');
-const { query } = require('express');
+const cTable = require("console.table");
+// require('dotenv').config();
+const inquirer = require("inquirer");
+const mysql = require("mysql");
+// const { query } = require('express');
 
 
 
-const connection = mysql.createConnection({
-    host: process.env.DB_HOST,
+var connection = mysql.createConnection({
+    host: "localhost",
     port: 3306,
-    user: process.env.DB_USER,
-    password: process.env.DB_PW,
-    database: process.env.DB_NAME
+    user: "root",
+    password: "root",
+    database: "employee_track"
 });
 
 connection.connect(function(err) {
@@ -42,13 +42,13 @@ function options() {
     }).then(function (answer) {
         switch (answer.action) {
             case 'View all employees':
-                viewEmployees();
+                displayEmployees();
                 break;
             case 'View all departments':
-                viewDepartments();
+                displayDepartments();
                 break;
             case 'View all roles':
-                viewRoles();
+                displayRoles();
                 break;
             case 'Add an employee':
                 addEmployee();
@@ -57,10 +57,10 @@ function options() {
                 addDepartment();
                 break;
             case 'Add a role':
-                addRole();
+                addRoles();
                 break;
             case 'Update employee role':
-                updateRole();
+                updateRoles();
                 break;
             case 'EXIT': 
                 exitApp();
@@ -92,7 +92,7 @@ function displayDepartments() {
 };
 
 function displayRoles() {
-    var query = 'SELECT * FROM role';
+    var query = 'SELECT * FROM roles';
     connection.query(query, function(err, res) {
         if (err) throw err;
         console.table('All Roles:', res)
@@ -101,7 +101,7 @@ function displayRoles() {
 };
 
 function addEmployee() {
-    connection.query('SELECT * FROM role', function (err, res) {
+    connection.query('SELECT * FROM roles', function (err, res) {
         if (err) throw err;
         inquirer
         .prompt ([
@@ -139,7 +139,7 @@ function addEmployee() {
                 console.log(role_id)
             }
         }
-        connection.mike(
+        connection.query(
             'INSERT INTO employee SET ?',
             {
                 first_name: answer.first_name,
@@ -182,7 +182,7 @@ function addDepartment() {
     
 };
 
-function addRole() {
+function addRoles() {
     connection.query('SELECT * FROM department', function(err, res) {
         if (err) throw err;
         inquirer
@@ -216,7 +216,7 @@ function addRole() {
                 }
             }
             connection.query(
-                'INSERT INTO role SET ?',
+        'INSERT INTO role SET ?',
                 {
                     title: answer.new_role,
                     salary: answer.salary,
@@ -234,13 +234,7 @@ function addRole() {
 
     //update roles
 
-    function updateRole () {
 
-    };
-
-    function deleteEmployee() {
-
-    };
 
   function exitApp() {
       connection.end();

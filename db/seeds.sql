@@ -1,6 +1,6 @@
-use employee_tracker;
+use employee_track;
 
-INSERT INTO departments (name)
+INSERT INTO department (name)
 VALUES
 ('Sales'),
 
@@ -17,9 +17,9 @@ VALUES
  ('Sofware Engineer', 120000, 2), 
  ('Lead Engineer', 130000, 2),
  ('Accountant',125000,3),
- ('Bookeeper',100000,3),
+ ('Bookeeper',100000,3);
 
- INSERT INTO employees (first_name, last_name, manager_id, role_id)
+INSERT INTO employee (first_name, last_name, manager_id, role_id)
 VALUES 
   ('Anthony', 'Trollope',1, 1),
   ('Charlotte', 'Yonge', 2, 2),
@@ -27,5 +27,5 @@ VALUES
   ('Matthew', 'Lewis', 4, 4),
   ('William', 'Bedford', 5, 5),
   ('Anne', 'Radcliffe', 6,6),
-  ('Charles', 'Brown', 7, 7),
+  ('Charles', 'Brown', 7, 7);
  
